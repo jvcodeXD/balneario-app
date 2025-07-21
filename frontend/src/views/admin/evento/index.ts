@@ -1,0 +1,5 @@
+export { default as Eventos } from './Eventos.vue'
+export { default as EventoCard } from './EventoCard.vue'
+export { default as EventoDetalles } from './EventoDetalles.vue'
+export { default as CrearEvento } from './CrearEvento.vue'
+export { default as EditarEvento } from './EditarEvento.vue'

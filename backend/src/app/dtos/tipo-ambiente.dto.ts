@@ -1,0 +1,6 @@
+export enum TipoAmbiente {
+  SAUNA = 'SAUNA',
+  FAMILIAR = 'FAMILIAR',
+  INDIVIDUAL = 'INDIVIDUAL',
+  SAUNA_MIXTO = 'SAUNA_MIXTO'
+}

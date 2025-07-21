@@ -1,0 +1,5 @@
+export { UserRepository } from './user.repository'
+export { AmbienteRepository } from './ambiente.repository'
+export { PrecioRepository } from './precio.repository'
+export { VentaRepository } from './venta.repository'
+export { EventoRepository } from './evento.repository'

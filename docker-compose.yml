@@ -1,0 +1,44 @@
+services:
+  database:
+    image: ${POSTGRES_IMAGE}
+    container_name: ${DATABASE_CONTAINER}
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - default_net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL} # 💡 Para Vite
+    container_name: ${BACKEND_CONTAINER}
+    ports:
+      - "${BACKEND_PORT}:80" # Nginx sirve en el puerto 80
+    env_file:
+      - ./backend/.env
+    environment:
+      DB_HOST: ${DATABASE_CONTAINER}
+      DB_PORT: ${DATABASE_PORT}
+      DB_USER: ${DATABASE_USER}
+      DB_PASSWORD: ${DATABASE_PASSWORD}
+      DB_NAME: ${DATABASE_DB}
+    depends_on:
+      - database
+    networks:
+      - default_net
+
+volumes:
+  pgdata:
+    name: ${DATABASE_VOLUME}
+
+networks:
+  default_net:
+    name: ${NETWORK_NAME}

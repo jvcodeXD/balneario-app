@@ -1,0 +1,5 @@
+export { default as AdminRoutes } from './admin.routes'
+export { default as AuthRoutes } from './auth.routes'
+export { default as PublicRoutes } from './public.routes'
+export { default as UserRoutes } from './user.routes'
+export { default as NotFoundRoutes } from './notfound.routes'
