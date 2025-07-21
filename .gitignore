@@ -1,4 +1,10 @@
-*.env
+.env
 
-*/node_modules
-*/dist
+# Ignora .env en cualquier subcarpeta
+**/.env
+
+# Ignora todas las carpetas node_modules sin importar la ubicación
+**/node_modules/
+
+# Ignora todas las carpetas dist sin importar la ubicación
+**/dist/
