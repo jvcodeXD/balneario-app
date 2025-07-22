@@ -37,4 +37,5 @@ RUN chmod +x /entrypoint.sh
 WORKDIR /app/backend
 
 EXPOSE 80
+EXPOSE 4000
 CMD ["/entrypoint.sh"]

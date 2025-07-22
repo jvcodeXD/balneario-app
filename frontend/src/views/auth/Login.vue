@@ -51,6 +51,7 @@ const login = async () => {
       pass.value
     )) as AuthResponse
     authStore.login(response.accessToken, response.user)
+    console.log(authStore.user)
 
     toastStore.addToast('success', 'Inicio de sesión exitoso')
 

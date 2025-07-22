@@ -126,7 +126,7 @@ const submit = async () => {
   try {
     const formData = new FormData()
     formData.append('username', localUser.value.username)
-    formData.append('fullName', localUser.value.fullname)
+    formData.append('fullname', localUser.value.fullname)
     formData.append('role', localUser.value.role)
     formData.append('password', localUser.value.password!)
 
