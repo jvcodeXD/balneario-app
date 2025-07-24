@@ -16,17 +16,33 @@
 
       <v-divider class="my-2" />
 
+      <!-- Navegación -->
       <v-list-item @click="goTo('Home')">
         <v-icon>mdi-home</v-icon>
-        <v-list-item-title v-if="drawer">Home</v-list-item-title>
+        <v-list-item-title v-if="drawer">Inicio</v-list-item-title>
       </v-list-item>
 
-      <v-list-item @click="goTo('Venta')">
+      <v-list-item @click="goTo('Users')">
+        <v-icon>mdi-account-multiple</v-icon>
+        <v-list-item-title v-if="drawer">Usuarios</v-list-item-title>
+      </v-list-item>
+
+      <v-list-item @click="goTo('Ambientes')">
+        <v-icon>mdi-office-building</v-icon>
+        <v-list-item-title v-if="drawer">Ambientes</v-list-item-title>
+      </v-list-item>
+
+      <v-list-item @click="goTo('Eventos')">
+        <v-icon>mdi-calendar-clock</v-icon>
+        <v-list-item-title v-if="drawer">Eventos</v-list-item-title>
+      </v-list-item>
+
+      <v-list-item @click="goTo('Precios')">
         <v-icon>mdi-cash</v-icon>
-        <v-list-item-title v-if="drawer">Ventas</v-list-item-title>
+        <v-list-item-title v-if="drawer">Precios</v-list-item-title>
       </v-list-item>
 
-      <v-list-item @click="goTo('ReporteUsuario')">
+      <v-list-item @click="goTo('Reportes')">
         <v-icon>mdi-chart-bar</v-icon>
         <v-list-item-title v-if="drawer">Reportes</v-list-item-title>
       </v-list-item>
@@ -37,9 +53,10 @@
       </v-list-item>
     </v-list>
 
+    <!-- Botón de colapso -->
     <v-btn
       icon
-      @click="$emit('toggle-drawer')"
+      @click="emit('update:drawer', !drawer)"
       class="mt-auto mb-4"
       color="secondary"
     >
@@ -52,27 +69,26 @@
 import { useRouter } from 'vue-router'
 import { useAuthStore, useToastStore } from '@/store'
 import { logoutService } from '@/services'
-import { useConfirmDialog, useToastNotify } from '@/composables'
 import { SidebarProfile } from '.'
+import { useConfirmDialog, useToastNotify } from '@/composables'
 
 const props = defineProps<{ drawer: boolean }>()
-const emit = defineEmits(['toggle-drawer'])
+const emit = defineEmits(['update:drawer'])
 
 const router = useRouter()
 const authStore = useAuthStore()
-const notify = useToastNotify()
 const toastStore = useToastStore()
-
-const { show } = useConfirmDialog()
+const notify = useToastNotify()
 
 const goTo = (routeName: string) => {
   router.push({ name: routeName })
 }
 
+const { show } = useConfirmDialog()
+
 const logout = async () => {
   try {
     const confirm = await show('¿Estás seguro de cerrar sesión?', 'info')
-
     if (!confirm) return
 
     await logoutService()

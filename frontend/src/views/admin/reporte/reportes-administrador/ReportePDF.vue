@@ -80,7 +80,6 @@ const imprimir = () => {
 }
 
 onMounted(async () => {
-  console.log(props)
   await cargarReporte()
 })
 </script>

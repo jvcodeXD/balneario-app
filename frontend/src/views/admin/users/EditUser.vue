@@ -54,7 +54,7 @@
             <v-col cols="12" md="6">
               <v-select
                 v-model="localUser.role"
-                :items="['ADMIN', 'USER']"
+                :items="tipoUsuarios"
                 label="Rol"
                 required
               />
@@ -92,6 +92,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['update:modelValue', 'saved'])
 const notify = useToastNotify()
+const tipoUsuarios = Object.values(UserRole)
 
 const isOpen = computed({
   get: () => props.modelValue,

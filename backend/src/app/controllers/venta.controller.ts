@@ -8,7 +8,6 @@ export const VentaController = {
   create: async (req: Request, res: Response) => {
     try {
       const venta = await service.create(req.body)
-      console.log(venta)
       res.status(201).json(venta)
     } catch (error: any) {
       res.status(400).json({ error: error.message })
@@ -73,6 +72,23 @@ export const VentaController = {
       let tipo: TipoAmbiente | undefined = undefined
       if (req.query.tipo) tipo = req.query.tipo as TipoAmbiente
       const ventas = await service.getVentasByFecha(fecha as string, tipo)
+      res.json(ventas)
+    } catch (error: any) {
+      res.status(500).json({ error: error.message })
+    }
+  },
+
+  getVentasRango: async (req: Request, res: Response) => {
+    try {
+      const { inicio, fin } = req.body
+      if (!inicio || !fin) {
+        res.status(400).json({ error: 'Se requieren fechas de inicio y fin' })
+        return
+      }
+      const ventas = await service.getVentasRango(
+        inicio as string,
+        fin as string
+      )
       res.json(ventas)
     } catch (error: any) {
       res.status(500).json({ error: error.message })

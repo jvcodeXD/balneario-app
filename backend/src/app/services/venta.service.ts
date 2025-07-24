@@ -212,7 +212,10 @@ export class VentaService {
       fechaInicio,
       fechaFin
     )
-    console.log(reporte)
     return reporte
+  }
+
+  getVentasRango = async (inicio: string, fin: string) => {
+    return await this.ventaRepository.getVentasRango(inicio, fin)
   }
 }

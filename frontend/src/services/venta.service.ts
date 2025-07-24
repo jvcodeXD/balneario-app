@@ -100,3 +100,18 @@ export const imprimir = async (codigo: number): Promise<void> => {
     )
   }
 }
+
+export const getVentasRango = async (
+  inicio: string,
+  fin: string
+): Promise<VentaInterface[]> => {
+  try {
+    const response = await api.post('/venta/rango', { inicio, fin })
+    return response.data
+  } catch (error: any) {
+    throw new Error(
+      error?.response?.data?.error ||
+        'Error al obtener ventas por rango de fechas'
+    )
+  }
+}

@@ -28,6 +28,7 @@ export {
   remove as deleteVenta,
   imprimir as imprimirVenta,
   getByFecha as getVentasByFecha,
+  getVentasRango as getVentasRango,
 } from './venta.service'
 export {
   getAll as getEventos,

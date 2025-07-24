@@ -9,5 +9,6 @@ router.get('/:id', VentaController.getById)
 router.post('/', VentaController.create)
 router.put('/:id', VentaController.update)
 router.delete('/:id', VentaController.remove)
+router.post('/rango', VentaController.getVentasRango)
 
 export default router

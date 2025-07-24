@@ -1,26 +1,57 @@
 <template>
-  <component :is="sidebarComponent" :drawer="drawer" @toggle-drawer="$emit('toggle-drawer')" />
+  <component
+    :is="sidebarComponent"
+    v-model:drawer="drawer"
+    :is-mobile="isMobile"
+    :is-desktop="isDesktop"
+  />
 </template>
 
 <script setup lang="ts">
-import { AdminSideBar, PublicSideBar, UserSideBar } from './sidebars'
+import {
+  AdminSideBarDesktop,
+  AdminMenuMobile,
+  ClientSideBarDesktop,
+  ClientMenuMobile,
+  UserSideBarDesktop,
+  UserMenuMobile,
+  PublicSideBarDesktop,
+  PublicMenuMobile,
+} from './sidebars'
+
 import { useAuthStore } from '@/store/auth'
 import { computed } from 'vue'
 import { UserRole } from '@/dtos'
 
-const props = defineProps<{ drawer: boolean }>()
-const emit = defineEmits(['toggle-drawer'])
+const props = defineProps<{
+  drawer: boolean
+  isMobile: boolean
+  isDesktop: boolean
+}>()
+
+const emit = defineEmits(['update:drawer'])
 
 const authStore = useAuthStore()
 
+// Enlace con v-model
+const drawer = computed({
+  get: () => props.drawer,
+  set: val => emit('update:drawer', val),
+})
+
 const sidebarComponent = computed(() => {
   if (authStore.isAuthenticated) {
-    if (authStore.role === UserRole.ADMIN) {
-      return AdminSideBar
-    } else if (authStore.role === UserRole.USER) {
-      return UserSideBar
+    switch (authStore.role) {
+      case UserRole.ADMIN:
+        return props.isMobile ? AdminMenuMobile : AdminSideBarDesktop
+      case UserRole.USER:
+        return props.isMobile ? UserMenuMobile : UserSideBarDesktop
+      case UserRole.CLIENT:
+        return props.isMobile ? ClientMenuMobile : ClientSideBarDesktop
     }
   }
-  return PublicSideBar
+
+  // Público
+  return props.isMobile ? PublicMenuMobile : PublicSideBarDesktop
 })
 </script>

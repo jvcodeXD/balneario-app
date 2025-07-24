@@ -165,7 +165,6 @@ export class VentaRepository {
   }
 
   getVentasByUsuario = async (inicio: Date, fin: Date, usuario_id: string) => {
-    console.log(inicio, fin)
     return await this.repository
       .createQueryBuilder('venta')
       .leftJoinAndSelect('venta.ambiente', 'ambiente')
@@ -292,5 +291,22 @@ export class VentaRepository {
       total_horas: Number(r.total_horas) || 0,
       total_ingresos: Number(r.total_ingresos) || 0
     }))
+  }
+
+  getVentasRango = async (horaInicio: string, horaFin: string) => {
+    const inicio = new Date(horaInicio)
+    const fin = new Date(horaFin)
+    return await this.repository.find({
+      relations: ['ambiente'],
+      where: {
+        deleted_at: IsNull(),
+        tipo: Not(In([TipoVenta.CANCELADA, TipoVenta.FINALIZADA])),
+        hora_inicio: LessThan(fin),
+        hora_fin: MoreThan(inicio)
+      },
+      order: {
+        hora_inicio: 'ASC'
+      }
+    })
   }
 }

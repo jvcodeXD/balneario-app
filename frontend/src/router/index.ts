@@ -1,9 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { AdminRoutes, AuthRoutes, NotFoundRoutes, PublicRoutes, UserRoutes } from './modules'
+import {
+  AdminRoutes,
+  AuthRoutes,
+  ClientRoutes,
+  NotFoundRoutes,
+  PublicRoutes,
+  UserRoutes,
+} from './modules'
 import { useAuthStore } from '@/store/auth'
 import { UserRole } from '@/dtos'
 
-const routes = [...PublicRoutes, ...AuthRoutes, ...AdminRoutes, ...UserRoutes, ...NotFoundRoutes]
+const routes = [
+  ...PublicRoutes,
+  ...AuthRoutes,
+  ...AdminRoutes,
+  ...UserRoutes,
+  ...NotFoundRoutes,
+  ...ClientRoutes,
+]
 
 const router = createRouter({
   history: createWebHistory(),
@@ -19,11 +33,25 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.requiresAuth && to.meta.role !== authStore.role) {
-    return next({ name: authStore.role === UserRole.ADMIN ? 'AdminDashboard' : 'UserDashboard' })
+    return next({
+      name:
+        authStore.role === UserRole.ADMIN
+          ? 'AdminDashboard'
+          : authStore.role === UserRole.USER
+            ? 'UserDashboard'
+            : 'ClientDashboard',
+    })
   }
 
   if (authStore.isAuthenticated && to.name === 'Login') {
-    return next({ name: authStore.role === UserRole.ADMIN ? 'AdminDashboard' : 'UserDashboard' })
+    return next({
+      name:
+        authStore.role === UserRole.ADMIN
+          ? 'AdminDashboard'
+          : authStore.role === UserRole.USER
+            ? 'UserDashboard'
+            : 'ClientDashboard',
+    })
   }
 
   next()

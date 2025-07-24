@@ -51,14 +51,20 @@ const login = async () => {
       pass.value
     )) as AuthResponse
     authStore.login(response.accessToken, response.user)
-    console.log(authStore.user)
 
     toastStore.addToast('success', 'Inicio de sesión exitoso')
 
-    if (response.user.role === UserRole.ADMIN) {
-      router.push('admin-dashboard')
-    } else {
-      router.push('user-dashboard')
+    switch (response.user.role) {
+      case UserRole.ADMIN:
+        router.push('admin-dashboard')
+        break
+      case UserRole.USER:
+        router.push('user-dashboard')
+        break
+      case UserRole.CLIENT:
+        router.push('client-dashboard')
+      default:
+        notify.error('Rol de usuario no reconocido')
     }
   } catch (error) {
     notify.error('Usuario o contraseña incorrectos')

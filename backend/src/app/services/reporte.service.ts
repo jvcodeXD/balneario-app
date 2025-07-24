@@ -24,7 +24,6 @@ export class ReporteService {
       fechaFin,
       idUsuario
     )
-    console.log(ventas)
     return {
       usuario,
       ventas
