@@ -32,7 +32,8 @@ export default defineConfig({
   },
   define: { 'process.env': {} },
   server: {
-    port: 5173, // Cambia si prefieres otro
+    host: '0.0.0.0',
+    port: 8080,
   },
   build: {
     outDir: 'dist', // Todo el build irá aquí

@@ -10,7 +10,8 @@ import { connectDB } from './config'
 
 dotenv.config()
 
-const PORT = process.env.PORT || 4000
+const PORT = Number(process.env.PORT) || 4000
+
 const app = express()
 
 connectDB()
@@ -18,14 +19,17 @@ connectDB()
     console.log('✅ Base de datos conectada con éxito')
 
     // Middlewares
-    app.use(express.json())
     app.use(
       cors({
-        origin: process.env.CLIENT_URL || 'http://localhost:5173',
+        origin: (origin, callback) => {
+          callback(null, true) // permite cualquier origen (necesario si usas cookies)
+        },
         credentials: true
       })
     )
+
     app.use(cookieParser())
+    app.use(express.json())
 
     // Servir archivos estáticos desde /uploads
     app.use(
@@ -50,8 +54,8 @@ connectDB()
     )
 
     // Iniciar servidor
-    app.listen(PORT, () =>
-      console.log(`🚀 Server running on http://localhost:${PORT}`)
+    app.listen(PORT, '0.0.0.0', () =>
+      console.log(`🚀 Server running on http://0.0.0.0:${PORT}`)
     )
   })
   .catch((err) => {
