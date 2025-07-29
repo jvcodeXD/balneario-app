@@ -1,16 +1,21 @@
-import { TipoReporteUsuario } from '../dtos'
-import { reporteDiarioUsuarioPDF, reporteVentasUsuarios } from './pdf.service'
-import { UserService } from './user.service'
-import { VentaService } from './venta.service'
+import {
+  reporteAmbientesPDF,
+  reporteDiarioUsuarioPDF,
+  reporteVentasUsuarios
+} from './pdf.service'
+import { UserService, VentaService, AmbienteService } from '.'
 import { Response } from 'express'
+import { DatosAmbientePDF } from '../dtos'
 
 export class ReporteService {
   private userService: UserService
   private ventaService: VentaService
+  private ambienteService: AmbienteService
 
   constructor() {
     this.userService = new UserService()
     this.ventaService = new VentaService()
+    this.ambienteService = new AmbienteService()
   }
 
   reporteDiarioUsuario = async (
@@ -115,5 +120,37 @@ export class ReporteService {
       fechaFin
     )
     return reporte
+  }
+
+  reporteAmbientes = async (fechaInicio: Date, fechaFin: Date) => {
+    const reporte = await this.ambienteService.getReporteAmbiente(
+      fechaInicio,
+      fechaFin
+    )
+    return reporte
+  }
+
+  reporteAmbientesPDF = async (
+    res: Response,
+    fechaInicio: Date,
+    fechaFin: Date
+  ) => {
+    const response = await this.ambienteService.getReporteAmbiente(
+      fechaInicio,
+      fechaFin
+    )
+    const reporte: DatosAmbientePDF = {
+      fecha_inicio: fechaInicio,
+      fecha_fin: fechaFin,
+      datos: response.map((ambiente) => ({
+        id: ambiente.id,
+        nombre: ambiente.nombre,
+        tipo: ambiente.tipo,
+        uso: ambiente.uso,
+        horas_uso: ambiente.horas_uso,
+        total_generado: ambiente.total_generado
+      }))
+    }
+    reporteAmbientesPDF(res, reporte)
   }
 }

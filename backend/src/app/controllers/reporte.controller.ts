@@ -1,7 +1,10 @@
 import { Request, Response } from 'express'
 import { ReporteService } from '../services'
 import { logger } from '../../config'
-import { reporteDiarioUsuarioPDF } from '../services/pdf.service'
+import {
+  reporteAmbientesPDF,
+  reporteDiarioUsuarioPDF
+} from '../services/pdf.service'
 
 const service = new ReporteService()
 
@@ -73,6 +76,25 @@ export const ReporteController = {
         fecha_fin
       )
       res.json(reporte)
+    } catch (error: any) {
+      res.status(400).json({ error: error.message })
+    }
+  },
+
+  reporteAmbientes: async (req: Request, res: Response) => {
+    try {
+      const { fecha_inicio, fecha_fin } = req.body
+      const reporte = await service.reporteAmbientes(fecha_inicio, fecha_fin)
+      res.json(reporte)
+    } catch (error: any) {
+      res.status(400).json({ error: error.message })
+    }
+  },
+
+  reporteAmbientesPDF: async (req: Request, res: Response) => {
+    try {
+      const { fecha_inicio, fecha_fin } = req.body
+      service.reporteAmbientesPDF(res, fecha_inicio, fecha_fin)
     } catch (error: any) {
       res.status(400).json({ error: error.message })
     }

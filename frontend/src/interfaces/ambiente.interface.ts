@@ -20,3 +20,12 @@ export interface AmbienteInterface {
   precio_id: string
   precio?: PrecioInterface
 }
+
+export interface AmbienteReporte {
+  id: string
+  nombre: string
+  tipo: string
+  uso: number
+  horas_uso: number
+  total_generado: number
+}

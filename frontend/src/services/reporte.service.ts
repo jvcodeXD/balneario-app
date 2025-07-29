@@ -34,3 +34,14 @@ export const reporteIngresoUsuarios = async (data: any): Promise<any> => {
       'Error al obtener reporte de ingresos de usuario'
   }
 }
+
+export const reporteAmbientes = async (data: any): Promise<any> => {
+  try {
+    const response = await api.post('/reporte/ambientes-usados', data)
+    return response.data
+  } catch (error: any) {
+    throw new Error(
+      error?.response?.data?.error || 'Error al obtener reporte de ambientes'
+    )
+  }
+}

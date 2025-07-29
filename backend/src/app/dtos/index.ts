@@ -12,3 +12,4 @@ export {
   UpdateVentaInterface
 } from './venta.interface'
 export { UsuarioInterface } from './usuario.interface'
+export { DatosAmbiente, DatosAmbientePDF } from './reporte.interface'

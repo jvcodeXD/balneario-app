@@ -10,7 +10,9 @@ export class AmbienteService {
   }
 
   create = async (data: Ambiente) => {
-    const existe = await this.ambienteRepository.findOne( { nombre: data.nombre } )
+    const existe = await this.ambienteRepository.findOne({
+      nombre: data.nombre
+    })
     if (existe) {
       throw new Error('Ese nombre ya existe')
     }
@@ -29,8 +31,10 @@ export class AmbienteService {
   }
 
   update = async (id: string, data: Partial<Ambiente>) => {
-    const existe = await this.ambienteRepository.findOne( { nombre: data.nombre } )
-    if (existe && existe.id!==id) {
+    const existe = await this.ambienteRepository.findOne({
+      nombre: data.nombre
+    })
+    if (existe && existe.id !== id) {
       throw new Error('Ese nombre ya existe')
     }
     return await this.ambienteRepository.update(id, data)
@@ -38,5 +42,12 @@ export class AmbienteService {
 
   delete = async (id: string) => {
     return this.ambienteRepository.delete(id)
+  }
+
+  getReporteAmbiente = async (fechaInicio: Date, fechaFin: Date) => {
+    return await this.ambienteRepository.getReporteAmbiente(
+      fechaInicio,
+      fechaFin
+    )
   }
 }

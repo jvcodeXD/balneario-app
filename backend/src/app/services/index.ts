@@ -3,7 +3,8 @@ export { deleteImageIfExists, renameProfileImage } from './helper.service'
 export {
   generarReciboPDF,
   generarReciboPiscina,
-  reporteVentasUsuarios
+  reporteVentasUsuarios,
+  reporteAmbientesPDF
 } from './pdf.service'
 export { UserService } from './user.service'
 export { AmbienteService } from './ambiente.service'

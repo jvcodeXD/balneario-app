@@ -42,4 +42,5 @@ export {
   reporteDiarioUsuario,
   reporteVentasTipoAmbiente,
   reporteIngresoUsuarios,
+  reporteAmbientes,
 } from './reporte.service'

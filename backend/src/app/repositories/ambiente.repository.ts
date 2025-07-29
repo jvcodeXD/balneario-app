@@ -65,4 +65,29 @@ export class AmbienteRepository {
       where: { ...where }
     })
   }
+
+  getReporteAmbiente = async (fechaInicio: Date, fechaFin: Date) => {
+    const query = this.repository
+      .createQueryBuilder('ambiente')
+      .leftJoin('ambiente.ventas', 'venta')
+      .select('ambiente.id', 'id')
+      .addSelect('ambiente.nombre', 'nombre')
+      .addSelect('ambiente.tipo', 'tipo')
+      .addSelect('COUNT(venta.id)', 'uso')
+      .addSelect('COALESCE(SUM(venta.precio_total), 0)', 'total_generado')
+      .addSelect(
+        `COALESCE(SUM(EXTRACT(EPOCH FROM (venta.hora_fin - venta.hora_inicio)) / 3600), 0)`,
+        'horas_uso'
+      )
+      .where('ambiente.deleted_at IS NULL')
+      .andWhere('venta.deleted_at IS NULL')
+      .andWhere('venta.created_at BETWEEN :fechaInicio AND :fechaFin', {
+        fechaInicio,
+        fechaFin
+      })
+      .groupBy('ambiente.id')
+      .orderBy('total_generado', 'DESC') // 👈 Aquí se ordena por el alias
+
+    return await query.getRawMany()
+  }
 }

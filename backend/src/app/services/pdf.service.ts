@@ -2,7 +2,12 @@ import PDFDocument from 'pdfkit'
 import { Response } from 'express'
 import { UserService, VentaService } from '.'
 import { format } from 'date-fns'
-import { TipoAmbiente, TipoVenta, VentaInterface } from '../dtos'
+import {
+  DatosAmbientePDF,
+  TipoAmbiente,
+  TipoVenta,
+  VentaInterface
+} from '../dtos'
 
 export const generarReciboPiscina = async (
   res: Response,
@@ -822,6 +827,90 @@ export const reporteVentasUsuarios = (res: Response, datos: DatosPDF) => {
     doc.text(`${u.cantidad_ventas}`, col2, y, { width: 50, align: 'right' })
     doc.text(`${u.total_ventas} Bs`, col3, y, { width: 80, align: 'right' })
   })
+
+  doc.end()
+}
+
+export const reporteAmbientesPDF = (res: Response, datos: DatosAmbientePDF) => {
+  const doc = new PDFDocument({ margin: 40 })
+
+  res.setHeader('Content-Type', 'application/pdf')
+  res.setHeader(
+    'Content-Disposition',
+    'inline; filename="reporte_ambientes_usados.pdf"'
+  )
+  doc.pipe(res)
+
+  // Coordenadas columnas
+  const col1 = 50 // Nombre
+  const col2 = 200 // Tipo
+  const col3 = 280 // Veces Usado
+  const col4 = 370 // Horas de Uso
+  const col5 = 470 // Total Generado
+
+  // Título
+  doc
+    .fontSize(14)
+    .font('Helvetica-Bold')
+    .text('Reporte Ambientes Usados', { align: 'center' })
+  doc.moveDown(0.5)
+
+  // Fechas
+  doc.fontSize(10).font('Helvetica')
+  doc.text(`Fecha Inicio: ${format(datos.fecha_inicio, 'dd/MM/yyyy')}`)
+  doc.text(`Fecha Fin: ${format(datos.fecha_fin, 'dd/MM/yyyy')}`)
+  doc.moveDown(1)
+
+  // Encabezado tabla
+  let y = doc.y
+  doc.fontSize(9).font('Helvetica-Bold')
+  doc.text('Ambiente', col1, y)
+  doc.text('Tipo', col2, y)
+  doc.text('Usos', col3, y, { width: 60, align: 'right' })
+  doc.text('Horas', col4, y, { width: 60, align: 'right' })
+  doc.text('Total (Bs)', col5, y, { width: 60, align: 'right' })
+  doc.moveDown(0.2)
+  doc.moveTo(40, doc.y).lineTo(550, doc.y).stroke()
+  doc.moveDown(0.3)
+
+  doc.font('Helvetica')
+
+  let totalUsos = 0
+  let totalHoras = 0
+  let totalBs = 0
+
+  // Datos
+  datos.datos.forEach((amb) => {
+    const y = doc.y
+    doc.text(amb.nombre, col1, y)
+    doc.text(amb.tipo, col2, y)
+    doc.text(`${amb.uso}`, col3, y, { width: 60, align: 'right' })
+    doc.text(Number(amb.horas_uso).toFixed(2), col4, y, {
+      width: 60,
+      align: 'right'
+    })
+    doc.text(Number(amb.total_generado).toFixed(2), col5, y, {
+      width: 60,
+      align: 'right'
+    })
+
+    totalUsos += Number(amb.uso)
+    totalHoras += Number(amb.horas_uso)
+    totalBs += Number(amb.total_generado)
+  })
+
+  doc.moveDown(0.8)
+  doc.moveTo(40, doc.y).lineTo(550, doc.y).stroke()
+  doc.moveDown(0.8)
+
+  // Resumen
+  doc.font('Helvetica-Bold').text('Resumen General', col1, doc.y)
+  doc.moveDown(0.5)
+  doc.font('Helvetica')
+
+  doc.text(`Total de Usos: ${totalUsos}`, col1)
+  doc.text(`Total de Horas: ${Number(totalHoras).toFixed(2)}`, col1)
+  doc.text(`Total Generado (Bs): ${Number(totalBs).toFixed(2)}`, col1)
 
   doc.end()
 }
