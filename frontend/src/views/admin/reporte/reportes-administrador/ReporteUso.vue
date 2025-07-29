@@ -1,4 +1,4 @@
 <template>
-  <div>Reporte fechas</div>
+  <div>Reporte uso</div>
 </template>
 <script setup lang="ts"></script>

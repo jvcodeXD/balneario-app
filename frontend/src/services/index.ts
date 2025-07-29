@@ -5,6 +5,7 @@ export {
   create as createUser,
   update as updateUser,
   remove as deleteUser,
+  getByRole as getUsersByRole,
 } from './user.service'
 export {
   getAll as getAmbientes,

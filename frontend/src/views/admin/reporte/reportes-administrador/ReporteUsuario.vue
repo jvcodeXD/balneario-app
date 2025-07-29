@@ -9,6 +9,7 @@
 
       <!-- Filtros de fechas -->
       <v-row>
+        <!-- Fecha inicio -->
         <v-col cols="12" md="3">
           <v-text-field
             v-model="fechaInicioFormatted"
@@ -31,6 +32,7 @@
           </v-text-field>
         </v-col>
 
+        <!-- Fecha fin -->
         <v-col cols="12" md="3">
           <v-text-field
             v-model="fechaFinFormatted"
@@ -52,7 +54,22 @@
             </v-menu>
           </v-text-field>
         </v-col>
-        <v-col cols="12" md="3">
+
+        <!-- Usuarios -->
+        <v-col cols="12" md="4">
+          <v-select
+            v-model="usuarioSeleccionado"
+            :items="usuarios"
+            label="Filtrar por Usuario"
+            item-title="fullname"
+            item-value="id"
+            variant="outlined"
+            clearable
+          />
+        </v-col>
+
+        <!-- Boton imprimir -->
+        <v-col cols="12" md="2">
           <v-btn variant="outlined" color="blue" @click="handleImprimir">
             <v-icon>mdi-printer</v-icon>
             Imprimir
@@ -62,50 +79,71 @@
 
       <v-divider class="my-4" />
 
-      <!-- Tabla general -->
-      <v-table dense>
-        <thead>
-          <tr>
-            <th>Fecha</th>
-            <th>Usuario</th>
-            <th>Cantidad Ventas</th>
-            <th>Total Ventas (Bs)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="v in ventasOrdenadas" :key="v.fecha + v.usuario_id">
-            <td>{{ new Date(v.fecha).toLocaleDateString() }}</td>
-            <td>{{ v.fullname }}</td>
-            <td>{{ v.cantidad_ventas }}</td>
-            <td>{{ v.total_ventas }}</td>
-          </tr>
-        </tbody>
-      </v-table>
+      <div v-if="!usuarioSeleccionado">
+        <!-- Tabla general -->
+        <v-table dense>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Usuario</th>
+              <th>Cantidad Ventas</th>
+              <th>Total Ventas (Bs)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="v in ventasOrdenadas" :key="v.fecha + v.usuario_id">
+              <td>{{ new Date(v.fecha).toLocaleDateString() }}</td>
+              <td>{{ v.fullname }}</td>
+              <td>{{ v.cantidad_ventas }}</td>
+              <td>{{ v.total_ventas }}</td>
+            </tr>
+          </tbody>
+        </v-table>
 
-      <v-divider class="my-6" />
+        <v-divider class="my-6" />
 
-      <h3 class="text-subtitle-1 font-weight-bold mb-2">Resumen General</h3>
+        <h3 class="text-subtitle-1 font-weight-bold mb-2">Resumen General</h3>
 
-      <v-table dense>
-        <thead>
-          <tr>
-            <th>Usuario</th>
-            <th>Cantidad Ventas</th>
-            <th>Total Ventas (Bs)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="usuario in resumenGeneral" :key="usuario.usuario_id">
-            <td>{{ usuario.fullname }}</td>
-            <td>{{ usuario.cantidad_ventas }}</td>
-            <td>{{ usuario.total_ventas }} Bs.</td>
-          </tr>
-        </tbody>
-      </v-table>
+        <v-table dense>
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Cantidad Ventas</th>
+              <th>Total Ventas (Bs)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="usuario in resumenGeneral" :key="usuario.usuario_id">
+              <td>{{ usuario.fullname }}</td>
+              <td>{{ usuario.cantidad_ventas }}</td>
+              <td>{{ usuario.total_ventas }} Bs.</td>
+            </tr>
+          </tbody>
+        </v-table>
+      </div>
+      <div v-else>
+        <ReporteUsuarioTabla
+          :usuario_id="usuarioSeleccionado"
+          :fechaInicio="inicio"
+          :fechaFin="fin"
+        />
+      </div>
     </v-card>
     <!-- Mostramos el reporte -->
     <v-container v-if="imprimir">
-      <ReportePDF :fecha_inicio="inicio" :fecha_fin="fin" />
+      <ImprimirReporte
+        v-if="usuarioSeleccionado"
+        :usuario_id="usuarioSeleccionado"
+        :fecha_inicio="inicio"
+        :fecha_fin="fin"
+        @close="imprimir = false"
+      />
+      <ReportePDF
+        v-else
+        :fecha_inicio="inicio"
+        :fecha_fin="fin"
+        @close="imprimir = false"
+      />
     </v-container>
   </v-container>
 </template>
@@ -116,6 +154,11 @@ import { reporteIngresoUsuarios } from '@/services'
 import { useToastNotify } from '@/composables'
 import { format, startOfDay, endOfDay } from 'date-fns'
 import { ReportePDF } from '.'
+import { UsuarioInterface } from '@/interfaces'
+import { getUsersByRole } from '@/services'
+import { UserRole } from '@/dtos'
+import { ReporteUsuarioTabla } from '.'
+import ImprimirReporte from '@/views/users/Reporte/ImprimirReporte.vue'
 
 interface VentaUsuario {
   fecha: string
@@ -128,6 +171,26 @@ interface VentaUsuario {
 const notify = useToastNotify()
 const ventas = ref<VentaUsuario[]>([])
 const imprimir = ref(false)
+const usuarios = ref<Array<UsuarioInterface>>([])
+const usuarioSeleccionado = ref<string | null>(null)
+
+const obtenerUsuarios = async () => {
+  try {
+    const data = await getUsersByRole(UserRole.USER)
+    usuarios.value = [
+      {
+        id: null,
+        fullname: 'Mostrar todos',
+        role: UserRole.USER,
+        username: '',
+        picture: '',
+      },
+      ...data,
+    ]
+  } catch (error) {
+    notify.error('Error al obtener usuarios')
+  }
+}
 
 const handleImprimir = () => {
   imprimir.value = !imprimir.value
@@ -201,5 +264,8 @@ const obtenerReporte = async () => {
   }
 }
 
-onMounted(obtenerReporte)
+onMounted(async () => {
+  await obtenerUsuarios()
+  await obtenerReporte()
+})
 </script>

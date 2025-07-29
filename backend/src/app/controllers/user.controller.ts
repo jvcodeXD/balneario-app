@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { UserService, renameProfileImage } from '../services'
 import { upload } from '../../middlewares'
+import { UserRole } from '../dtos'
 
 const service = new UserService()
 
@@ -76,6 +77,19 @@ export const UserController = {
         return
       }
       res.json({ message: 'Usuario eliminado' })
+    } catch (error: any) {
+      res.status(400).json({ error: error.message })
+    }
+  },
+
+  getByRole: async (req: Request, res: Response) => {
+    try {
+      const role = req.body.role as UserRole
+      if (!role) {
+        res.status(400).json({ error: 'Falta el parámetro "role"' })
+      }
+      const users = await service.getByRole(role)
+      res.json(users)
     } catch (error: any) {
       res.status(400).json({ error: error.message })
     }

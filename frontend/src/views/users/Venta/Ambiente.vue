@@ -8,7 +8,7 @@
       <vue-cal
         :disable-views="['years', 'year', 'month', 'week']"
         active-view="day"
-        :split-days="ambientes"
+        :split-days="ambientesConEstilo"
         sticky-split-labels
         :events="ventas"
         todayButton
@@ -39,6 +39,7 @@
         </template>
       </vue-cal>
     </div>
+
     <v-dialog v-model="ventaModal" max-width="350" overflow-y="auto">
       <component
         :is="componenteVenta"
@@ -48,6 +49,7 @@
         @close="cerrarVenta"
       />
     </v-dialog>
+
     <ImprimirRecibo v-if="ventaId" :codigo="ventaId" @close="cerrarVenta" />
   </div>
 </template>
@@ -74,9 +76,11 @@ import 'vue-cal/dist/vuecal.css'
 import { format } from 'date-fns'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
+import { useThemeStore } from '@/store'
 
 const props = defineProps<{ tipo: TipoAmbiente }>()
 const notify = useToastNotify()
+const theme = useThemeStore()
 
 const calendarioRef = ref<HTMLElement | null>(null)
 
@@ -92,6 +96,39 @@ const fechaCal = ref(new Date())
 const ambientes = ref<AmbienteInterface[]>([])
 const ventas = ref<any[]>([])
 const eventos = ref<EventoInterface[]>([])
+
+// Computed: estilos por tema
+const estiloSplit = computed(() => {
+  const oscuro = theme.currentTheme === 'dark'
+  return {
+    split1: {
+      backgroundColor: oscuro
+        ? 'rgba(50, 50, 50, 0.9)'
+        : 'rgba(240, 243, 245, 0.9)',
+      border: '1px solid #d1d5db',
+    },
+    split2: {
+      backgroundColor: oscuro
+        ? 'rgba(70, 70, 70, 0.9)'
+        : 'rgba(225, 228, 230, 0.9)',
+      border: '1px solid #d1d5db',
+    },
+  }
+})
+
+// Aplicar estilos directamente al ambiente
+const ambientesConEstilo = computed(() =>
+  ambientes.value.map((ambiente, index) => {
+    const base = (index % 2) + 1
+    const splitClass = `split${base}`
+    const darkClass = theme.currentTheme === 'dark' ? `${splitClass}-dark` : ''
+    return {
+      ...ambiente,
+      label: ambiente.nombre,
+      class: `${splitClass} ${darkClass}`.trim(), // ← combina clase clara + clase dark si aplica
+    }
+  })
+)
 
 const componenteVenta = computed(() => {
   switch (props.tipo) {
@@ -137,9 +174,7 @@ const obtenerVentas = async (fechaActual: Date) => {
 const cerrarVenta = async (id: string | null) => {
   ventaId.value = null
   mostrarRecibo.value = false
-  if (id) {
-    mostrarReciboId(id)
-  }
+  if (id) mostrarReciboId(id)
   ventaModal.value = false
   await obtenerVentas(fechaCal.value)
 }
@@ -165,7 +200,6 @@ const obtenerEventos = async (fechaActual: Date) => {
     fin.setMinutes(finMinuto)
 
     evento.ambientes.forEach(ambiente => {
-      // Verificamos si el ambiente del evento está dentro de los ambientes mostrados
       const existe = ambientes.value.some(a => a.id === ambiente.id)
       if (!existe) return
 
@@ -198,19 +232,17 @@ const exportarPDF = async () => {
   const pageWidth = pdf.internal.pageSize.getWidth()
   const pageHeight = pdf.internal.pageSize.getHeight()
 
-  const margenIzquierda = 30 // 3 cm
-  const margenArriba = 25 // 2 cm
-  const margenDerecha = 25 // 2 cm
-  const margenAbajo = 25 // 2 cm
+  const margenIzquierda = 30
+  const margenArriba = 25
+  const margenDerecha = 25
+  const margenAbajo = 25
 
   const contenidoAncho = pageWidth - margenIzquierda - margenDerecha
   const contenidoAlto = pageHeight - margenArriba - margenAbajo
 
-  // Imagen al 100% del ancho disponible, se ajusta en altura aunque se deforme
   const imgWidth = contenidoAncho
   const imgHeight = (canvas.height / canvas.width) * imgWidth
 
-  // Si la altura no alcanza, la estiramos para ocupar todo el alto disponible
   const finalImgHeight = Math.max(imgHeight, contenidoAlto)
 
   pdf.addImage(
@@ -232,11 +264,7 @@ const exportarPDF = async () => {
 const obtenerAmbientes = async () => {
   try {
     const res = await getAmbientes(EstadoAmbiente.HABILITADO, props.tipo)
-    ambientes.value = res.map((ambiente: AmbienteInterface, index: number) => ({
-      ...ambiente,
-      label: ambiente.nombre,
-      class: `split${(index % 2) + 1}`,
-    }))
+    ambientes.value = res
   } catch (error: any) {
     notify.error(error.message)
   }
@@ -253,22 +281,18 @@ const actualizarDatos = async () => {
   actualizarEstadoVisualEventos(ventas.value)
 }
 
-onMounted(async () => {
-  await actualizarDatos()
-  setInterval(() => {
-    actualizarDatos()
-  }, 10000)
+onMounted(() => {
+  actualizarDatos()
+  setInterval(actualizarDatos, 10000)
 })
 </script>
 
 <style>
-/* Encabezado de las divisiones del día */
 .vuecal .day-split-header {
   font-size: 14px;
   font-weight: bold;
 }
 
-/* Evento de limpieza con líneas diagonales en naranja */
 .vuecal__event.evento {
   background: repeating-linear-gradient(
     45deg,
@@ -293,20 +317,32 @@ onMounted(async () => {
   text-align: center;
 }
 
-/* Fondo y borde de las celdas (Splits) */
-.vuecal__body .split1 {
-  background-color: rgba(240, 243, 245, 0.9); /* Gris claro */
-  border: 1px solid #d1d5db; /* Borde gris */
-}
-
-.vuecal__body .split2 {
-  background-color: rgba(225, 228, 230, 0.9); /* Gris oscuro */
-  border: 1px solid #d1d5db; /* Borde gris */
-}
 a .boton-imprimir {
   position: sticky;
   top: 10px;
   right: 60px;
   z-index: 999;
+}
+
+/* 🌞 Modo claro (ya existen y se mantienen) */
+.vuecal__body .split1 {
+  background-color: rgba(240, 243, 245, 0.9);
+  border: 1px solid #d1d5db;
+}
+
+.vuecal__body .split2 {
+  background-color: rgba(225, 228, 230, 0.9);
+  border: 1px solid #d1d5db;
+}
+
+/* 🌙 Modo oscuro (nuevas clases) */
+.vuecal__body .split1-dark {
+  background-color: rgba(50, 50, 50, 0.9);
+  border: 1px solid #4a4a4a;
+}
+
+.vuecal__body .split2-dark {
+  background-color: rgba(70, 70, 70, 0.9);
+  border: 1px solid #4a4a4a;
 }
 </style>

@@ -1,5 +1,6 @@
 import api from '@/plugins/axios'
 import type { UsuarioInterface } from '@/interfaces'
+import { UserRole } from '@/dtos'
 
 export const getAll = async (): Promise<UsuarioInterface[]> => {
   try {
@@ -7,6 +8,19 @@ export const getAll = async (): Promise<UsuarioInterface[]> => {
     return response.data
   } catch (error: any) {
     throw new Error(error?.response?.data?.error || 'Error al obtener usuarios')
+  }
+}
+
+export const getByRole = async (
+  role: UserRole
+): Promise<UsuarioInterface[]> => {
+  try {
+    const response = await api.post('/users/rol', { role })
+    return response.data
+  } catch (error: any) {
+    throw new Error(
+      error?.response?.data?.error || 'Error al obtener usuarios por rol'
+    )
   }
 }
 

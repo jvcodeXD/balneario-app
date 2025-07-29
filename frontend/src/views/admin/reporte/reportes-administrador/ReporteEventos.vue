@@ -1,4 +1,4 @@
 <template>
-  <div>Reporte horario</div>
+  <div>Reporte eventos</div>
 </template>
 <script setup lang="ts"></script>

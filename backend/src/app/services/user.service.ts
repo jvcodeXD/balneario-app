@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs'
 import { UserRepository } from '../repositories'
 import { User } from '../entities'
+import { UserRole } from '../dtos'
 
 export class UserService {
   private userRepository: UserRepository
@@ -28,6 +29,11 @@ export class UserService {
 
     const { password, ...rest } = user
     return rest
+  }
+
+  getByRole = async (role: UserRole) => {
+    const users = await this.userRepository.getByRole(role)
+    return users.map(({ password, ...rest }) => rest)
   }
 
   update = async (id: string, updateData: Partial<User>) => {

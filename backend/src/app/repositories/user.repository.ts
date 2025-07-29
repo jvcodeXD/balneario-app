@@ -1,6 +1,7 @@
 import { Repository, IsNull } from 'typeorm'
 import { AppDataSource } from '../../config'
 import { User } from '../entities'
+import { UserRole } from '../dtos'
 
 export class UserRepository {
   private repository: Repository<User>
@@ -31,6 +32,13 @@ export class UserRepository {
     if (!user) return null
     Object.assign(user, updateData)
     return await this.repository.save(user)
+  }
+
+  getByRole = async (role: UserRole) => {
+    console.log(role)
+    return await this.repository.find({
+      where: { role, deleted_at: IsNull() }
+    })
   }
 
   delete = async (id: string) => {
