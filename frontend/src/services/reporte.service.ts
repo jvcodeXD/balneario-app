@@ -45,3 +45,14 @@ export const reporteAmbientes = async (data: any): Promise<any> => {
     )
   }
 }
+
+export const reporteUso = async (data: any): Promise<any> => {
+  try {
+    const response = await api.post('/reporte/uso', data)
+    return response.data
+  } catch (error: any) {
+    throw new Error(
+      error?.response?.data?.error || 'Error al obtener reporte de uso'
+    )
+  }
+}

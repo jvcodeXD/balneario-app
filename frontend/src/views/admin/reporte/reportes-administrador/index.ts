@@ -1,8 +1,5 @@
 export { default as ReporteAmbiente } from './ReporteAmbiente.vue'
 export { default as ReporteUso } from './ReporteUso.vue'
-export { default as ReporteFinanciero } from './ReporteFinanciero.vue'
-export { default as ReporteEventos } from './ReporteEventos.vue'
-export { default as ReporteTipoVenta } from './ReporteTipoVenta.vue'
 export { default as ReporteUsuario } from './ReporteUsuario.vue'
 export { default as ReportePDF } from './ReportePDF.vue'
 export { default as ReporteUsuarioTabla } from './ReporteUsuarioTabla.vue'

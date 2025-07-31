@@ -153,4 +153,8 @@ export class ReporteService {
     }
     reporteAmbientesPDF(res, reporte)
   }
+
+  reporteUso = async (fechaInicio: string, fechaFin: string) => {
+    return await this.ventaService.getVentasByFechaHora(fechaInicio, fechaFin)
+  }
 }

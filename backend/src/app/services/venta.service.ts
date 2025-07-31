@@ -218,4 +218,8 @@ export class VentaService {
   getVentasRango = async (inicio: string, fin: string) => {
     return await this.ventaRepository.getVentasRango(inicio, fin)
   }
+
+  getVentasByFechaHora = async (inicio: string, fin: string) => {
+    return await this.ventaRepository.getVentasByFechaHora(inicio, fin)
+  }
 }

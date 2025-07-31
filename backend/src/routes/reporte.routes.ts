@@ -14,5 +14,6 @@ router.post('/usuarios/pdf', ReporteController.reporteIngresoUsuariosPDF)
 router.post('/ambientes', ReporteController.reporteAmbientesUsados)
 router.post('/ambientes-usados', ReporteController.reporteAmbientes)
 router.post('/ambientes-usados/pdf', ReporteController.reporteAmbientesPDF)
+router.post('/uso', ReporteController.reporteUso)
 
 export default router

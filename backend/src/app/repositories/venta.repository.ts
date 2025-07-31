@@ -309,4 +309,22 @@ export class VentaRepository {
       }
     })
   }
+
+  getVentasByFechaHora = async (fechaInicio: string, fechaFin: string) => {
+    const query = this.repository
+      .createQueryBuilder('venta')
+      .select(`TO_CHAR(venta.created_at, 'YYYY-MM-DD')`, 'fecha')
+      .addSelect(`TO_CHAR(venta.hora_inicio, 'HH24:00')`, 'hora')
+      .addSelect('COUNT(*)', 'cantidad')
+      .where('venta.deleted_at IS NULL')
+      .andWhere('venta.created_at BETWEEN :fechaInicio AND :fechaFin', {
+        fechaInicio,
+        fechaFin
+      })
+      .groupBy('fecha, hora')
+      .orderBy('fecha', 'ASC')
+      .addOrderBy('hora', 'ASC')
+
+    return await query.getRawMany()
+  }
 }

@@ -98,5 +98,18 @@ export const ReporteController = {
     } catch (error: any) {
       res.status(400).json({ error: error.message })
     }
+  },
+
+  reporteUso: async (req: Request, res: Response) => {
+    try {
+      const { fecha_inicio, fecha_fin } = req.body
+      if (!fecha_inicio || !fecha_fin) {
+        res.status(400).json({ error: 'Fechas de inicio y fin son requeridas' })
+      }
+      const reporte = await service.reporteUso(fecha_inicio, fecha_fin)
+      res.json(reporte)
+    } catch (error: any) {
+      res.status(500).json({ error: error.message })
+    }
   }
 }

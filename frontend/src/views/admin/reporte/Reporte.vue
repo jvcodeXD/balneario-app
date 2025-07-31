@@ -41,15 +41,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import {
-  ReporteUsuario,
-  ReporteAmbiente,
-  ReporteTipoVenta,
-  ReporteFinanciero,
-  ReporteUso,
-  ReporteEventos,
-} from './reportes-administrador'
-import { GraficoVenta } from './graficos'
+import { ReporteUsuario, ReporteAmbiente } from './reportes-administrador'
+import { GraficoVenta, GraficoUso } from './graficos'
 
 const tabSeleccionada = ref('grafico')
 
@@ -73,28 +66,10 @@ const opciones = [
     descripcion: 'Uso individual por ambiente físico.',
   },
   {
-    label: 'Por Tipo de Venta',
-    value: 'tipoVenta',
-    icon: 'mdi-tag-multiple',
-    descripcion: 'Comparación según tipo de venta.',
-  },
-  {
     label: 'Por Uso',
     value: 'uso',
     icon: 'mdi-calendar-clock',
     descripcion: 'Distribución de ventas por fecha y horario.',
-  },
-  {
-    label: 'Eventos Programados',
-    value: 'eventos',
-    icon: 'mdi-calendar-check',
-    descripcion: 'Eventos registrados en un rango de fechas.',
-  },
-  {
-    label: 'Ingresos Financieros',
-    value: 'financiero',
-    icon: 'mdi-cash-multiple',
-    descripcion: 'Resumen total de ingresos por fechas.',
   },
 ]
 
@@ -104,14 +79,8 @@ const componenteActual = (valor: string) => {
       return ReporteUsuario
     case 'ambiente':
       return ReporteAmbiente
-    case 'tipoVenta':
-      return ReporteTipoVenta
-    case 'uso': // ← nuevo componente combinado
-      return ReporteUso
-    case 'eventos':
-      return ReporteEventos
-    case 'financiero':
-      return ReporteFinanciero
+    case 'uso':
+      return GraficoUso
     default:
       return null
   }
