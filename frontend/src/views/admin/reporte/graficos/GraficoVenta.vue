@@ -245,7 +245,7 @@ watch(
         </v-col>
       </v-row>
 
-      <div ref="chartRef" style="height: 400px; width: 100%" />
+      <div ref="chartRef" style="height: 400px; width: 100%"></div>
     </v-card-text>
   </v-card>
 </template>

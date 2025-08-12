@@ -1,56 +1,5 @@
 <template>
-  <v-container>
-    <!-- Selector de tipo -->
-    <v-row>
-      <v-col cols="12" md="4">
-        <v-select
-          v-model="tipoSeleccionado"
-          :items="tiposAmbiente"
-          label="Filtrar por tipo de ambiente"
-          item-title="label"
-          item-value="value"
-          variant="outlined"
-          class="mb-4"
-        />
-      </v-col>
-    </v-row>
-
-    <!-- Cards -->
-    <v-row>
-      <v-col
-        v-for="venta in ventasFiltradas"
-        :key="venta.id"
-        cols="12"
-        sm="6"
-        md="4"
-      >
-        <v-card
-          :color="getColor(venta.minutosRestantes)"
-          class="text-black"
-          elevation="2"
-        >
-          <v-card-title class="text-h6 d-flex align-center">
-            <v-icon class="me-2">{{ getIcono(venta.ambiente.tipo) }}</v-icon>
-            {{ venta.ambiente.nombre }}
-            <v-chip small label class="ml-auto">
-              {{ venta.ambiente.tipo }}
-            </v-chip>
-          </v-card-title>
-
-          <v-card-text>
-            <div>
-              <strong>Cliente:</strong> {{ venta.nombre_cliente || 'N/A' }}
-            </div>
-            <div>
-              <strong>Inicio:</strong> {{ formatTime(venta.hora_inicio) }}
-            </div>
-            <div><strong>Fin:</strong> {{ formatTime(venta.hora_fin) }}</div>
-            <div><strong>Faltan:</strong> {{ venta.minutosRestantes }} min</div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+  <Ambientes />
 </template>
 
 <script setup lang="ts">
@@ -58,6 +7,7 @@ import { ref, computed, onMounted } from 'vue'
 import { getVentasRango } from '@/services'
 import { TipoAmbiente } from '@/interfaces'
 import { useToastNotify } from '@/composables'
+import { Ambientes } from '../tocador'
 
 const ventas = ref<any[]>([])
 const tipoSeleccionado = ref<TipoAmbiente | null>(null)

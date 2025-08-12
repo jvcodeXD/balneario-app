@@ -49,7 +49,7 @@
         </v-col>
       </v-row>
 
-      <div ref="chartRef" style="width: 100%; height: 750px" />
+      <div ref="chartRef" style="width: 100%; height: 750px"></div>
     </v-card-text>
   </v-card>
 </template>

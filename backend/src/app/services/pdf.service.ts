@@ -110,6 +110,7 @@ export const generarReciboPiscina = async (
 export const generarReciboPDF = async (res: Response, id: string) => {
   const ventaService = new VentaService()
   const venta = await ventaService.getById(id)
+  console.log(venta)
 
   if (!venta) {
     return res.status(404).json({ error: 'Venta no encontrada' })

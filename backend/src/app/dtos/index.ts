@@ -6,6 +6,7 @@ export { TipoEvento } from './tipo-evento.dto'
 export { TipoReporteUsuario } from './tipo-reporte-usuario.dto'
 export { PrecioInterface } from './precio.interface'
 export { AmbienteInterface } from './ambiente.interface'
+export { EstadoVenta } from './estado-venta.dto'
 export {
   VentaInterface,
   CrearVentaInterface,

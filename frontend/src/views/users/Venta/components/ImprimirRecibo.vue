@@ -47,6 +47,7 @@ const cargarRecibo = async () => {
       responseType: 'blob',
     })
     const blob = new Blob([response.data], { type: 'application/pdf' })
+    console.log(blob)
     pdfUrl.value = URL.createObjectURL(blob)
     dialog.value = true
   } catch (error: any) {

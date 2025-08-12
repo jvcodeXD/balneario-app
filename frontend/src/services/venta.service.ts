@@ -7,6 +7,7 @@ import type {
   VentaInterface,
   VentaTipo,
 } from '@/interfaces'
+import { EstadoVenta } from '@/dtos'
 
 export const getAll = async (
   tipo: TipoAmbiente,
@@ -112,6 +113,20 @@ export const getVentasRango = async (
     throw new Error(
       error?.response?.data?.error ||
         'Error al obtener ventas por rango de fechas'
+    )
+  }
+}
+
+export const actualizarEstadoVenta = async (
+  id: string,
+  estado: EstadoVenta
+): Promise<void> => {
+  try {
+    await api.post(`/venta/actualizar-estado/${id}`, { estado })
+  } catch (error: any) {
+    throw new Error(
+      error?.response?.data?.error ||
+        'Error al actualizar el estado de las ventas'
     )
   }
 }

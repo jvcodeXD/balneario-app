@@ -148,7 +148,7 @@
     </v-card-text>
 
     <v-card-actions class="justify-end">
-      <v-btn text @click="close">Cancelar</v-btn>
+      <v-btn text @click="close(null)">Cancelar</v-btn>
       <v-btn color="success" @click="crearVentaIndividual">Aceptar</v-btn>
     </v-card-actions>
   </v-card>

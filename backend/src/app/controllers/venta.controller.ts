@@ -93,5 +93,19 @@ export const VentaController = {
     } catch (error: any) {
       res.status(500).json({ error: error.message })
     }
+  },
+
+  actualizarEstadoVenta: async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params
+      const { estado } = req.body
+      if (!estado) {
+        res.status(400).json({ error: 'Estado es requerido' })
+      }
+      await service.actualizarEstadoVenta(id, estado)
+      res.json({ message: 'Estado de la venta actualizado' })
+    } catch (error: any) {
+      res.status(500).json({ error: error.message })
+    }
   }
 }

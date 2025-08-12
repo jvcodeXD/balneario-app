@@ -1,7 +1,7 @@
 import { Repository, Not, In, LessThan, MoreThan, IsNull } from 'typeorm'
 import { AppDataSource, logger } from '../../config'
 import { Venta, User } from '../entities'
-import { TipoAmbiente, TipoVenta } from '../dtos'
+import { EstadoVenta, TipoAmbiente, TipoVenta } from '../dtos'
 import { DateHelper } from '../../utils'
 
 export class VentaRepository {
@@ -301,6 +301,7 @@ export class VentaRepository {
       where: {
         deleted_at: IsNull(),
         tipo: Not(In([TipoVenta.CANCELADA, TipoVenta.FINALIZADA])),
+        estado: Not(EstadoVenta.FINALIZADA), // 👉 Agregado
         hora_inicio: LessThan(fin),
         hora_fin: MoreThan(inicio)
       },
@@ -326,5 +327,39 @@ export class VentaRepository {
       .addOrderBy('hora', 'ASC')
 
     return await query.getRawMany()
+  }
+
+  obtenerNuevaHora = async () => {
+    const ahora = new Date()
+    const yyyy = ahora.getFullYear()
+    const MM = String(ahora.getMonth() + 1).padStart(2, '0')
+    const dd = String(ahora.getDate()).padStart(2, '0')
+    const hh = String(ahora.getHours()).padStart(2, '0')
+    const mm = String(ahora.getMinutes()).padStart(2, '0')
+
+    const nuevaHora = `${yyyy}-${MM}-${dd} ${hh}:${mm}:00.000`
+    return nuevaHora
+  }
+
+  actualizarEstadoVenta = async (id: string, nuevoEstado: EstadoVenta) => {
+    const venta = await this.repository.findOne({
+      where: { id, deleted_at: IsNull() }
+    })
+
+    if (!venta) {
+      throw new Error('Venta no encontrada')
+    }
+
+    venta.estado = nuevoEstado
+
+    venta.updated_at = new Date()
+    if (nuevoEstado === EstadoVenta.FINALIZADA) {
+      const nuevaHoraFin = await this.obtenerNuevaHora()
+      venta.hora_fin = new Date(nuevaHoraFin)
+    } else if (nuevoEstado === EstadoVenta.EN_USO) {
+      const nuevaHoraInicio = await this.obtenerNuevaHora()
+      venta.hora_inicio = new Date(nuevaHoraInicio)
+    }
+    return await this.repository.save(venta)
   }
 }

@@ -30,6 +30,7 @@ export {
   imprimir as imprimirVenta,
   getByFecha as getVentasByFecha,
   getVentasRango as getVentasRango,
+  actualizarEstadoVenta,
 } from './venta.service'
 export {
   getAll as getEventos,

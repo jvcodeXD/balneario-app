@@ -10,7 +10,7 @@ import {
   DeleteDateColumn
 } from 'typeorm'
 import { User, Ambiente } from '.'
-import { TipoVenta } from '../dtos'
+import { EstadoVenta, TipoVenta } from '../dtos'
 @Entity()
 export class Venta {
   @PrimaryGeneratedColumn('uuid')
@@ -53,6 +53,9 @@ export class Venta {
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   adelanto: number
+
+  @Column({ type: 'enum', enum: EstadoVenta, default: EstadoVenta.PENDIENTE })
+  estado: EstadoVenta
 
   @Column({ type: 'timestamp' })
   created_at: Date

@@ -4,7 +4,7 @@ import {
   VentaRepository
 } from '../repositories'
 import { Venta } from '../entities'
-import { TipoAmbiente, TipoEvento, TipoVenta } from '../dtos'
+import { EstadoVenta, TipoAmbiente, TipoEvento, TipoVenta } from '../dtos'
 
 export class VentaService {
   private ventaRepository: VentaRepository
@@ -221,5 +221,18 @@ export class VentaService {
 
   getVentasByFechaHora = async (inicio: string, fin: string) => {
     return await this.ventaRepository.getVentasByFechaHora(inicio, fin)
+  }
+
+  actualizarEstadoVenta = async (
+    id: string,
+    estado: EstadoVenta
+  ): Promise<void> => {
+    try {
+      await this.ventaRepository.actualizarEstadoVenta(id, estado)
+    } catch (error: any) {
+      throw new Error(
+        error?.message || 'Error al actualizar el estado de la venta'
+      )
+    }
   }
 }

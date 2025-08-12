@@ -10,5 +10,6 @@ router.post('/', VentaController.create)
 router.put('/:id', VentaController.update)
 router.delete('/:id', VentaController.remove)
 router.post('/rango', VentaController.getVentasRango)
+router.post('/actualizar-estado/:id', VentaController.actualizarEstadoVenta)
 
 export default router
